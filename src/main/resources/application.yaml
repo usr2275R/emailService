@@ -1,0 +1,49 @@
+server:
+  port:8080
+
+
+spring:
+  application:
+    name: emailService
+  datasource:
+    url: jdbc:postgresql://localhost:5432/emaildb
+    username: postgres
+    password: 8848117312
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+          ddl-auto: update
+          open-in-view: false
+
+  mail:
+      host: smtp.gmail.com
+      port: 587
+      username: chandru4809@gmail.com
+      password: 'dttz uvrv qpft reia'
+      properties:
+          mail:
+            SMTP:
+            STARTTLS:
+             auth: true
+             enable: true
+             required: true
+             connection timeout: 5000
+             timeout: 5000
+             write timeout: 5000
+
+
+  app:
+      email:
+            from: ${EMAIL_FROM:no-reply@example.com}
+            from-name: ${EMAIL_FROM_NAME:My Company}
+            max-attempts: 3
+            retry-interval-ms: 60000
+
+  security:
+      api-keys:
+            order-service: ${API_KEY_ORDER_SERVICE:change-me-order}
+            user-service: ${API_KEY_USER_SERVICE:change-me-user}
+
+  servlet:
+      multipart:
+            enabled: true
