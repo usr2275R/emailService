@@ -1,4 +1,4 @@
-package config;
+package com.example.emailservice.config;
 
 import jakarta.validation.constraints.Email;
 import org.springframework.boot.context.properties.ConfigurationProperties;

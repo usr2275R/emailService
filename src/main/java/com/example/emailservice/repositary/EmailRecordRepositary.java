@@ -1,7 +1,7 @@
-package repositary;
+package com.example.emailservice.repositary;
 
-import model.EmailRecord;
-import model.EmailStatus;
+import com.example.emailservice.model.EmailRecord;
+import com.example.emailservice.model.EmailStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
