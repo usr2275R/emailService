@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8">
+    <title>welcome</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #222; max-width: 600px; margin: auto;">
+<h2>Welcome, <span th:text="${name}">there</span>!</h2>
+<p>Thanks for joining <strong th:text="${company} ?: 'us'">our platform</strong>.</p>
+<p th:if="${activationLink != null}">
+    Please <a th:href="${activationLink}">activate your account</a> to get started.
+</p>
+<p style="color:#777; font-size: 12px;">If you didn't sign up, you can ignore this email.</p>
+</body>
+</html>
