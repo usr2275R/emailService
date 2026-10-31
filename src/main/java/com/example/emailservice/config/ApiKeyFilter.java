@@ -4,6 +4,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -11,16 +13,14 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Map;
 
+@Component
+@RequiredArgsConstructor
 public class ApiKeyFilter extends OncePerRequestFilter {
 
-    public static final String HEADER = "API-KEY";
+    public static final String HEADER = "X-API-KEY";
     public static final String CLIENT = "clientId";
 
-    private final AppProperties properties;
-
-    public ApiKeyFilter(AppProperties properties) {
-        this.properties = properties;
-    }
+  private final AppProperties properties;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request){
@@ -40,6 +40,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
             response.getWriter().write("{\"error\":\"Missing or Invalid Api key\"}" );
             return;
         }
+
         request.setAttribute(CLIENT,clientId);
         chain.doFilter(request,response);
     }

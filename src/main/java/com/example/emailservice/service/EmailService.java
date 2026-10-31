@@ -52,6 +52,7 @@ public EmailResponse submit(EmailRequest emailRequest, String clientId){
             subject= defaultSubject(emailRequest.getTemplateName(),emailRequest.getVariables());
         }
     }
+
     EmailRecord emailRecord = new EmailRecord();
     emailRecord.setClientId(clientId);
     emailRecord.setToAddress(join(emailRequest.getTo()));

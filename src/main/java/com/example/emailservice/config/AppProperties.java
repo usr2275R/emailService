@@ -1,6 +1,8 @@
 package com.example.emailservice.config;
 
 import jakarta.validation.constraints.Email;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.security.Security;
@@ -21,6 +23,7 @@ public class AppProperties {
     public Email getEmail() {
         return email;
     }
+
     public static class Email{
         private String from;
         private String fromName;
@@ -59,6 +62,7 @@ public class AppProperties {
             this.retryAttemptsMs = retryAttemptsMs;
         }
     }
+
     public static class Security{
         private Map<String,String> apiKeys = new HashMap<>();
 

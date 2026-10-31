@@ -5,7 +5,7 @@ import com.example.emailservice.model.EmailStatus;
 
 import java.time.Instant;
 
-public record EmailResponse(String id, EmailStatus emailStatus, int attempts,
+public record EmailResponse(Long id, EmailStatus emailStatus, int attempts,
                             String lastError, Instant createdAt, Instant sentAt) {
     public static EmailResponse from(EmailRecord emailRecord ) {
         return new EmailResponse(emailRecord.getId(),

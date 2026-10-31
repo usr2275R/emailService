@@ -11,9 +11,11 @@ spring:
     password: 8848117312
     driver-class-name: org.postgresql.Driver
   jpa:
+    open-in-view: false
+    show-sql: false
     hibernate:
           ddl-auto: update
-          open-in-view: false
+
 
   mail:
       host: smtp.gmail.com
@@ -21,29 +23,25 @@ spring:
       username: chandru4809@gmail.com
       password: 'dttz uvrv qpft reia'
       properties:
-          mail:
-            SMTP:
-            STARTTLS:
-             auth: true
+        mail:
+         smtp:
+           auth: true
+           starttls:
              enable: true
              required: true
-             connection timeout: 5000
-             timeout: 5000
-             write timeout: 5000
+           connectiontimeout: 5000
+           timeout: 5000
+           writetimeout: 5000
 
+app:
+   email:
+          from: ${EMAIL_FROM:no-reply@example.com}
+          from-name: ${EMAIL_FROM_NAME:My Company}
+          max-attempts: 3
+          retry-attempts-ms: 60000
 
-  app:
-      email:
-            from: ${EMAIL_FROM:no-reply@example.com}
-            from-name: ${EMAIL_FROM_NAME:My Company}
-            max-attempts: 3
-            retry-interval-ms: 60000
-
-  security:
+   security:
       api-keys:
             order-service: ${API_KEY_ORDER_SERVICE:change-me-order}
             user-service: ${API_KEY_USER_SERVICE:change-me-user}
 
-  servlet:
-      multipart:
-            enabled: true

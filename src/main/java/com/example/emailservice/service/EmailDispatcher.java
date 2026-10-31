@@ -32,8 +32,10 @@ public class EmailDispatcher {
         EmailRecord emailRecord= emailRecordRepositary.findById(emailId).orElse(null);
         if(emailRecord==null || emailRecord.getEmailStatus()== EmailStatus.SENT)
             return;
+
         emailRecord.setAttempts(emailRecord.getAttempts() + 1);
         emailRecord.setLastAttemptAt(Instant.now());
+
         try{
             MimeMessage mimeMessage=javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper= new MimeMessageHelper(mimeMessage,true,"UTF-8");
@@ -55,10 +57,6 @@ public class EmailDispatcher {
 
             emailRecord.setSentAt(Instant.now());
             emailRecord.setLastError(null);
-            log.info("Email {} sent to {}", emailRecord.getId(), emailRecord.getToAddress());
-
-
-
         }
         catch (Exception e){
             emailRecord.setEmailStatus(EmailStatus.FAILED);
@@ -69,6 +67,7 @@ public class EmailDispatcher {
                     appProperties.getEmail().getMaxAttempts(),
                     e.getMessage());
         }
+        log.info("Email {} sent to {}", emailRecord.getId(), emailRecord.getToAddress());
         emailRecordRepositary.save(emailRecord);
     }
     private static String[] split(String spt){

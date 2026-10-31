@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface EmailRecordRepositary extends JpaRepository<EmailRecord,String> {
-    Optional<EmailRecord> findByIdAndClientId(String id,String clientId);
+public interface EmailRecordRepositary extends JpaRepository<EmailRecord, Long> {
+    Optional<EmailRecord> findByIdAndClientId(Long id,String clientId);
 
     @Query("SELECT e FROM EmailRecord e "
             + "WHERE e.emailStatus = :emailStatus AND e.attempts < :maxAttempts "

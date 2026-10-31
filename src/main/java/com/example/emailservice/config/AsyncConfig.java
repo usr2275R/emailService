@@ -20,7 +20,5 @@ public class AsyncConfig {
         executor.setAwaitTerminationSeconds(30);
         executor.initialize();
         return executor;
-
-
     }
 }

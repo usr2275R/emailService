@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.Map;
 
+
 public class EmailRequest {
 
     @NotEmpty(message = "at least one recipient must be required")
