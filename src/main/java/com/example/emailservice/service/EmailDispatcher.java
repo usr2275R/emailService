@@ -7,7 +7,6 @@ import com.example.emailservice.repositary.EmailRecordRepositary;
 import jakarta.mail.internet.MimeMessage;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.el.stream.Stream;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Arrays;
-
-import static org.aspectj.util.LangUtil.split;
 
 @Service
 @Data

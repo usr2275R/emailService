@@ -1,4 +1,5 @@
 package com.example.emailservice.service;
+
 import com.example.emailservice.config.AppProperties;
 import com.example.emailservice.dto.EmailRequest;
 import com.example.emailservice.dto.EmailResponse;
@@ -8,7 +9,6 @@ import com.example.emailservice.model.EmailStatus;
 import com.example.emailservice.repositary.EmailRecordRepositary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -17,8 +17,6 @@ import org.thymeleaf.exceptions.TemplateInputException;
 
 import java.util.List;
 import java.util.Map;
-
-import static org.apache.tomcat.util.buf.StringUtils.join;
 
 @Service
 @Slf4j
