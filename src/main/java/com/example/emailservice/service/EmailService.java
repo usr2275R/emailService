@@ -21,6 +21,7 @@ import java.util.Map;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+
 public class EmailService {
 
    private final EmailRecordRepositary emailRecordRepositary;
@@ -29,33 +30,33 @@ public class EmailService {
    private final AppProperties appProperties;
 
 public EmailResponse submit(EmailRequest emailRequest, String clientId){
-    String body = emailRequest.getBody();
-    String subject = emailRequest.getSubject();
-    boolean html = emailRequest.isHtml();
+    String body = emailRequest.body();
+    String subject = emailRequest.subject();
+    boolean html = emailRequest.html();
 
-    if(emailRequest.getTemplateName() !=null && !emailRequest.getTemplateName().isBlank()){
+    if(emailRequest.templateName() !=null && !emailRequest.templateName().isBlank()){
         Context context =new Context();
-        if(emailRequest.getVariables() != null)
-            context.setVariables(emailRequest.getVariables());
+        if(emailRequest.variables() != null)
+            context.setVariables(emailRequest.variables());
         try{
-            body = templateEngine.process(emailRequest.getTemplateName(),context);
+            body = templateEngine.process(emailRequest.templateName(),context);
         }
         catch (TemplateInputException e){
-            throw new IllegalArgumentException("Unknown template:" +emailRequest.getTemplateName());
+            throw new IllegalArgumentException("Unknown template:" +emailRequest.templateName());
         }
 
         html=true;
 
         if(subject ==null || subject.isBlank()){
-            subject= defaultSubject(emailRequest.getTemplateName(),emailRequest.getVariables());
+            subject= defaultSubject(emailRequest.templateName(),emailRequest.variables());
         }
     }
 
     EmailRecord emailRecord = new EmailRecord();
     emailRecord.setClientId(clientId);
-    emailRecord.setToAddress(join(emailRequest.getTo()));
-    emailRecord.setCcAddress(join(emailRequest.getCc()));
-    emailRecord.setBccAddress(join(emailRequest.getBcc()));
+    emailRecord.setToAddress(join(emailRequest.to()));
+    emailRecord.setCcAddress(join(emailRequest.cc()));
+    emailRecord.setBccAddress(join(emailRequest.bcc()));
     emailRecord.setSubject(subject);
     emailRecord.setBody(body);
     emailRecord.setHtml(html);
