@@ -1,5 +1,6 @@
 package com.example.emailservice.dto;
 
+import com.example.emailservice.model.EmailProviderType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
@@ -22,7 +23,8 @@ public record EmailRequest (
      String body,
      Boolean html,
      String templateName,
-     Map<String,Object> variables
+     Map<String,Object> variables,
+    EmailProviderType provider
 ){
 
     public EmailRequest {

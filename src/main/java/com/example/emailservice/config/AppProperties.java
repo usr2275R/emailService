@@ -21,8 +21,12 @@ public class AppProperties {
         private String fromName;
         private int maxAttempts=3;
         private long retryAttemptsMs=6000;
+        private  String provider = "smtp";       // new
+        private  String sendgridApiKey = "";
 
     }
+
+
 
     @Setter
     @Getter

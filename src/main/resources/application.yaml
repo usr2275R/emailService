@@ -39,6 +39,8 @@ app:
           from-name: ${EMAIL_FROM_NAME:My Company}
           max-attempts: 3
           retry-attempts-ms: 60000
+          provider: smtp
+          sendgrid-api-key: ${SENDGRID_API_KEY:}
 
    security:
       api-keys:

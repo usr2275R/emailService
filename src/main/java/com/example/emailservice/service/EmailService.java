@@ -4,6 +4,7 @@ import com.example.emailservice.config.AppProperties;
 import com.example.emailservice.dto.EmailRequest;
 import com.example.emailservice.dto.EmailResponse;
 import com.example.emailservice.exception.NotFoundException;
+import com.example.emailservice.model.EmailProviderType;
 import com.example.emailservice.model.EmailRecord;
 import com.example.emailservice.model.EmailStatus;
 import com.example.emailservice.repositary.EmailRecordRepositary;
@@ -34,6 +35,13 @@ public EmailResponse submit(EmailRequest emailRequest, String clientId){
     String subject = emailRequest.subject();
     boolean html = emailRequest.html();
 
+
+    EmailProviderType chosen = emailRequest.provider() != null
+            ? emailRequest.provider()
+            : EmailProviderType.valueOf(appProperties.getEmail().getProvider().toUpperCase());
+
+
+
     if(emailRequest.templateName() !=null && !emailRequest.templateName().isBlank()){
         Context context =new Context();
         if(emailRequest.variables() != null)
@@ -60,6 +68,7 @@ public EmailResponse submit(EmailRequest emailRequest, String clientId){
     emailRecord.setSubject(subject);
     emailRecord.setBody(body);
     emailRecord.setHtml(html);
+    emailRecord.setProvider(chosen.name().toLowerCase());
     emailRecordRepositary.save(emailRecord);
 
     emailDispatcher.dispatch(emailRecord.getId());

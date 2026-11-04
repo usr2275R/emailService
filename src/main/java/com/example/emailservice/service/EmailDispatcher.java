@@ -3,24 +3,22 @@ package com.example.emailservice.service;
 import com.example.emailservice.config.AppProperties;
 import com.example.emailservice.model.EmailRecord;
 import com.example.emailservice.model.EmailStatus;
+import com.example.emailservice.providers.EmailProvider;
+import com.example.emailservice.providers.EmailProviderFactory;
 import com.example.emailservice.repositary.EmailRecordRepositary;
-import jakarta.mail.internet.MimeMessage;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Arrays;
 
 @Service
 @Data
 @Slf4j
 public class EmailDispatcher {
 
-    private final JavaMailSender javaMailSender;
+    private final EmailProviderFactory emailProviderFactory;
     private final EmailRecordRepositary emailRecordRepositary;
     private final AppProperties appProperties;
 
@@ -34,26 +32,14 @@ public class EmailDispatcher {
         emailRecord.setLastAttemptAt(Instant.now());
 
         try{
-            MimeMessage mimeMessage=javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper= new MimeMessageHelper(mimeMessage,true,"UTF-8");
-            mimeMessageHelper.setFrom(appProperties.getEmail().getFrom(),appProperties.getEmail().getFromName());
-            mimeMessageHelper.setTo(split(emailRecord.getToAddress()));
-
-            if (emailRecord.getCcAddress() != null && !emailRecord.getCcAddress().isBlank()) {
-                mimeMessageHelper.setCc(split(emailRecord.getCcAddress()));
-            }
-
-            if (emailRecord.getBccAddress() != null && !emailRecord.getBccAddress().isBlank()) {
-                mimeMessageHelper.setBcc(split(emailRecord.getBccAddress()));
-            }
-            mimeMessageHelper.setSubject(emailRecord.getSubject());
-            mimeMessageHelper.setText(emailRecord.getBody(), emailRecord.isHtml());
-
-            javaMailSender.send(mimeMessage);
+            EmailProvider provider = emailProviderFactory.get(emailRecord.getProvider());
+            log.info("Email {} using provider {}", emailRecord.getId(), provider.name());
+            provider.send(emailRecord);
             emailRecord.setEmailStatus(EmailStatus.SENT);
 
             emailRecord.setSentAt(Instant.now());
             emailRecord.setLastError(null);
+            log.info("Email {} sent to {}", emailRecord.getId(), emailRecord.getToAddress());
         }
         catch (Exception e){
             emailRecord.setEmailStatus(EmailStatus.FAILED);
@@ -64,15 +50,9 @@ public class EmailDispatcher {
                     appProperties.getEmail().getMaxAttempts(),
                     e.getMessage());
         }
-        log.info("Email {} sent to {}", emailRecord.getId(), emailRecord.getToAddress());
         emailRecordRepositary.save(emailRecord);
     }
-    private static String[] split(String spt){
-        return Arrays.stream(spt.split(","))
-                .map(String::trim)
-                .filter(s->!s.isEmpty())
-                .toArray(String[]::new);
-    }
+
     private static String truncate(String s){
         if(s==null)
             return "unknown error";

@@ -61,6 +61,9 @@ public class EmailRecord {
     @Column(nullable = false)
     private Instant createdAt = Instant.now();
 
+    @Column(name = "provider", length = 20)
+    private String provider;
+
     private Instant sentAt;
     private Instant lastAttemptAt;
 }
