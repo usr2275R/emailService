@@ -4,5 +4,5 @@ import com.example.emailservice.model.EmailRecord;
 
 public interface EmailProvider {
     String name();
-    void send(EmailRecord emailRecord) throws Exception;
+    void send(EmailRecord record) throws Exception;
 }
