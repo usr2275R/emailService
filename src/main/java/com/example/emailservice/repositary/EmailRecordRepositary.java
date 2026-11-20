@@ -2,10 +2,14 @@ package com.example.emailservice.repositary;
 
 import com.example.emailservice.model.EmailRecord;
 import com.example.emailservice.model.EmailStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,4 +21,16 @@ public interface EmailRecordRepositary extends JpaRepository<EmailRecord, Long> 
             + "ORDER BY e.createdAt ASC")
     List<EmailRecord> findPendingEmails(@Param("emailStatus") EmailStatus emailStatus,
                                         @Param("maxAttempts") int maxAttempts);
+
+    @Query("""
+    SELECT e FROM EmailRecord e
+    WHERE e.emailStatus = :status
+      AND e.attempts < :attempts
+      AND (e.lastAttemptAt IS NULL OR e.lastAttemptAt < :before)
+    """)
+    List<EmailRecord> findRetryableEmails(
+            @Param("status") EmailStatus status,
+            @Param("attempts") int attempts,
+            @Param("before") Instant before);
+    Page<EmailRecord> findByEmailStatus(EmailStatus status, Pageable pageable);
 }

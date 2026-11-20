@@ -5,7 +5,9 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Getter
 @ConfigurationProperties(prefix = "app")
@@ -25,13 +27,11 @@ public class AppProperties {
         private  String sendgridApiKey = "";
 
     }
-
-
-
     @Setter
     @Getter
     public static class Security{
         private Map<String,String> apiKeys = new HashMap<>();
+        private Set<String> adminClients = new HashSet<>();
 
     }
 }

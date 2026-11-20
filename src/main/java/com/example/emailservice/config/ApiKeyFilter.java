@@ -1,10 +1,12 @@
 package com.example.emailservice.config;
 
+import com.example.emailservice.errorResponse.ApiErrorWriter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +29,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     public static final String CLIENT = "clientId";
 
   private final AppProperties properties;
-
+  private final ApiErrorWriter apiErrorWriter;
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request){
         String path= request.getRequestURI();
@@ -35,25 +38,31 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                            HttpServletResponse response,
+                                    HttpServletResponse response,
                             FilterChain chain) throws ServletException, IOException{
         String provided = request.getHeader(HEADER);
         String clientId = provided == null ? null: resolveClient(provided);
 
-        if(clientId==null){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\":\"Missing or Invalid Api key\"}" );
+        if (clientId == null) {
+            apiErrorWriter.write(request, response, HttpStatus.UNAUTHORIZED,
+                    "Missing or Invalid Api key");
             return;
         }
 
         request.setAttribute(CLIENT,clientId);
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(clientId,
-                null,
-                List.of(new SimpleGrantedAuthority("ROLE_CLIENT")));
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_CLIENT"));
+        if (properties.getSecurity().getAdminClients().contains(clientId)) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+
+
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken(clientId, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        chain.doFilter(request,response);
+
+        chain.doFilter(request, response);
     }
 
     private String resolveClient(String provided){

@@ -26,11 +26,13 @@ import java.util.Map;
 public class EmailService {
 
    private final EmailRecordRepositary emailRecordRepositary;
-   private final EmailDispatcher emailDispatcher;
-   private final TemplateEngine templateEngine;
+    private final EmailEventProducer emailEventProducer;
+    private final TemplateEngine templateEngine;
    private final AppProperties appProperties;
+    private final EmailDispatcher emailDispatcher;
 
-public EmailResponse submit(EmailRequest emailRequest, String clientId){
+
+    public EmailResponse submit(EmailRequest emailRequest, String clientId){
     String body = emailRequest.body();
     String subject = emailRequest.subject();
     boolean html = emailRequest.html();
@@ -71,7 +73,7 @@ public EmailResponse submit(EmailRequest emailRequest, String clientId){
     emailRecord.setProvider(chosen.name().toLowerCase());
     emailRecordRepositary.save(emailRecord);
 
-    emailDispatcher.dispatch(emailRecord.getId());
+    emailEventProducer.publish(emailRecord.getId());
     log.info("Email{} accepted from client {}",emailRecord.getId(),clientId);
     return EmailResponse.from(emailRecord);
 }

@@ -8,7 +8,6 @@ import com.example.emailservice.providers.EmailProviderFactory;
 import com.example.emailservice.repositary.EmailRecordRepositary;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -22,7 +21,7 @@ public class EmailDispatcher {
     private final EmailRecordRepositary emailRecordRepositary;
     private final AppProperties appProperties;
 
-    @Async("emailExecutor")
+    //@Async("emailExecutor")
     public void dispatch(Long emailId){
         EmailRecord emailRecord= emailRecordRepositary.findById(emailId).orElse(null);
         if(emailRecord==null || emailRecord.getEmailStatus()== EmailStatus.SENT)
@@ -31,7 +30,7 @@ public class EmailDispatcher {
         emailRecord.setAttempts(emailRecord.getAttempts() + 1);
         emailRecord.setLastAttemptAt(Instant.now());
 
-        try{
+        try {
             EmailProvider provider = emailProviderFactory.get(emailRecord.getProvider());
             log.info("Email {} using provider {}", emailRecord.getId(), provider.name());
             provider.send(emailRecord);
@@ -40,17 +39,22 @@ public class EmailDispatcher {
             emailRecord.setSentAt(Instant.now());
             emailRecord.setLastError(null);
             log.info("Email {} sent to {}", emailRecord.getId(), emailRecord.getToAddress());
-        }
-        catch (Exception e){
-            emailRecord.setEmailStatus(EmailStatus.FAILED);
+            emailRecordRepositary.save(emailRecord);
+
+        } catch (Exception e) {
+            int maxAttempts = appProperties.getEmail().getMaxAttempts();
+            boolean exhausted = emailRecord.getAttempts() >= maxAttempts;
+
+            emailRecord.setEmailStatus(exhausted ? EmailStatus.FAILED : EmailStatus.PENDING);
             emailRecord.setLastError(truncate(e.getMessage()));
+            emailRecordRepositary.save(emailRecord);
+
             log.warn("Email {} failed (attempt {}/{}) : {}",
-                    emailRecord.getId(),
-                    emailRecord.getAttempts(),
-                    appProperties.getEmail().getMaxAttempts(),
-                    e.getMessage());
+                    emailRecord.getId(), emailRecord.getAttempts(), maxAttempts, e.getMessage());
+
+            throw e instanceof RuntimeException re ? re : new RuntimeException(e);
         }
-        emailRecordRepositary.save(emailRecord);
+           emailRecordRepositary.save(emailRecord);
     }
 
     private static String truncate(String s){

@@ -66,4 +66,5 @@ public class EmailRecord {
 
     private Instant sentAt;
     private Instant lastAttemptAt;
+
 }

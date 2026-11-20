@@ -1,39 +1,73 @@
 package com.example.emailservice.exception;
 
 
+import com.example.emailservice.errorResponse.ApiError;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.Map;
+import java.time.Instant;
+import java.util.List;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(NotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex,
+                                                     HttpServletRequest req) {
+        List<ApiError.FieldViolation> violations = ex.getBindingResult().getFieldErrors().stream()
+                .map(fe -> new ApiError.FieldViolation(fe.getField(), fe.getDefaultMessage(), fe.getCode()))
+                .toList();
+        return build(HttpStatus.BAD_REQUEST, "Validation failed", req, violations);
     }
 
-//    private ResponseEntity<Map<String ,Object>> buildErrorResponse(
-//            HttpStatus status,
-//            String message
-//    ) {
-//        String traceId = MDC.get("traceId");
-//        Map<String, Object> body = new LinkedHashMap<>();
-//
-//        Map<String, Object> error = LinkedHashMap.newLinkedHashMap(5);
-//        error.put("traceId", traceId != null ? traceId : "");
-//        error.put("status", status.name());
-//        error.put("errorCode", status.value());
-//        error.put("timestamp", LocalDateTime.now().toString());
-//        error.put("message", message);
-//        body.put("error", error);
-//        body.put("data", null);
-//        return ResponseEntity
-//                .status(status)
-//                .body(body);
-//    }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiError> handleUnreadable(HttpMessageNotReadableException ex,
+                                                     HttpServletRequest req) {
+        log.warn("Unreadable request body: {}", ex.getMessage());
+        return build(HttpStatus.BAD_REQUEST, "Malformed or unreadable request body", req, List.of());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
+                                                       HttpServletRequest req) {
+        String message = "Parameter '" + ex.getName() + "' has an invalid value";
+        return build(HttpStatus.BAD_REQUEST, message, req, List.of());
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiError> handleMissingParam(MissingServletRequestParameterException ex,
+                                                       HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST,
+                "Missing required parameter: " + ex.getParameterName(), req, List.of());
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ApiError> handleMissingHeader(MissingRequestHeaderException ex,
+                                                        HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST,
+                "Missing required header: " + ex.getHeaderName(), req, List.of());
+    }
+
+    private ResponseEntity<ApiError> build(HttpStatus status,
+                                           String message,
+                                           HttpServletRequest req,
+                                           List<ApiError.FieldViolation> violations) {
+        ApiError body = new ApiError(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                message,
+                req.getRequestURI(),
+                 violations);
+        return ResponseEntity.status(status).body(body);
+    }
 }

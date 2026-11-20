@@ -15,13 +15,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http,ApiKeyFilter apiKeyFilter) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           ApiKeyFilter apiKeyFilter,
+                                           ApiAccessDeniedHandler accessDeniedHandler) throws Exception{
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(autherisation->autherisation
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/health").permitAll()
-                        .anyRequest().hasRole("CLIENT"))
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**", "/error").permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .anyRequest().hasAnyRole("CLIENT", "ADMIN"))
+                .exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler))
                 .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

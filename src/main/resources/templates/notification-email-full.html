@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${subject}">Email subject</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif; color:#333333;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8; padding:24px 0;">
+    <tr>
+        <td align="center">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0"
+                   style="max-width:600px; width:100%; background-color:#ffffff; border-radius:8px; overflow:hidden;">
+
+                <!-- HEADER: productBrand / platformBrand -->
+                <tr>
+                    <td style="background-color:#1f3a5f; padding:20px 28px; color:#ffffff;">
+                        <div style="font-size:20px; font-weight:bold;" th:text="${productBrand}">Product Brand</div>
+                        <div style="font-size:12px; opacity:0.8;" th:text="${platformBrand}">Platform Brand</div>
+                    </td>
+                </tr>
+
+                <!-- MAIL INFO: from / to / cc / subject -->
+                <tr>
+                    <td style="padding:20px 28px 0 28px;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                               style="font-size:13px; color:#555555; border-bottom:1px solid #e1e5ea; padding-bottom:12px;">
+                            <tr th:if="${fromAddress != null}">
+                                <td style="padding:3px 0; width:70px; color:#888888;">From</td>
+                                <td style="padding:3px 0;" th:text="${fromAddress}">noreply@eventmanagement.com</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:3px 0; width:70px; color:#888888;">To</td>
+                                <td style="padding:3px 0;" th:text="${recipientEmail}">attendee@example.com</td>
+                            </tr>
+                            <tr th:if="${ccList != null and !#lists.isEmpty(ccList)}">
+                                <td style="padding:3px 0; width:70px; color:#888888;">Cc</td>
+                                <td style="padding:3px 0;" th:text="${#strings.listJoin(ccList, ', ')}">manager@example.com, team@example.com</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:3px 0; width:70px; color:#888888;">Subject</td>
+                                <td style="padding:3px 0; font-weight:bold; color:#333333;" th:text="${subject}">Registration Confirmation: Tech Conference 2026</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- TITLE -->
+                <tr>
+                    <td style="padding:24px 28px 8px 28px;">
+                        <h2 style="margin:0; font-size:22px; color:#1f3a5f;" th:text="${title}">Title</h2>
+                    </td>
+                </tr>
+
+                <!-- MESSAGE: message / messageBody / customMessage -->
+                <tr>
+                    <td style="padding:8px 28px 16px 28px; font-size:15px; line-height:1.6;">
+                        <p style="margin:0 0 12px 0;" th:text="${message}">Main display message.</p>
+                        <p style="margin:0 0 12px 0; white-space:pre-line;"
+                           th:if="${messageBody != null and messageBody != message}"
+                           th:text="${messageBody}">Message body.</p>
+                        <p style="margin:0; white-space:pre-line;"
+                           th:if="${customMessage != null and customMessage != messageBody}"
+                           th:text="${customMessage}">Custom message.</p>
+                    </td>
+                </tr>
+
+                <!-- REASON (only when present) -->
+                <tr th:if="${reason != null and !#strings.isEmpty(reason)}">
+                    <td style="padding:0 28px 16px 28px;">
+                        <div style="background-color:#fdecea; border-left:4px solid #d93025; padding:12px 16px; font-size:14px;">
+                            <strong>Reason:</strong>
+                            <span th:text="${reason}">Reason for failure</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- DETAIL ROWS -->
+                <tr th:if="${detailRows != null and !#lists.isEmpty(detailRows)}">
+                    <td style="padding:0 28px 16px 28px;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                               style="border:1px solid #e1e5ea; font-size:14px;">
+                            <tr th:each="row : ${detailRows}">
+                                <td style="padding:10px 14px; background-color:#f8f9fb; width:35%; border-bottom:1px solid #e1e5ea;"
+                                    th:text="${row.label}">Label</td>
+                                <td style="padding:10px 14px; border-bottom:1px solid #e1e5ea;"
+                                    th:text="${row.value}">Value</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- META: reportedAt, templateName -->
+                <tr>
+                    <td style="padding:0 28px 24px 28px; font-size:12px; color:#6b7280; line-height:1.6;">
+                        <div>Reported at: <span th:text="${reportedAt}">2026-11-19 04:05:00 UTC</span></div>
+                        <div th:if="${templateName != null}">Template: <span th:text="${templateName}">template-name</span></div>
+                    </td>
+                </tr>
+
+                <!-- FOOTER: appBaseUrl, supportUrl, privacyUrl, copyrightYear -->
+                <tr>
+                    <td style="background-color:#f4f6f8; padding:20px 28px; font-size:12px; color:#6b7280; text-align:center;">
+                        <div style="margin-bottom:8px;">
+                            <a th:href="${appBaseUrl}" style="color:#1f3a5f; text-decoration:none;">Open app</a>
+                            <span th:if="${supportUrl != null}"> &nbsp;|&nbsp;
+                                <a th:href="${supportUrl}" style="color:#1f3a5f; text-decoration:none;">Support</a>
+                            </span>
+                            <span th:if="${privacyUrl != null}"> &nbsp;|&nbsp;
+                                <a th:href="${privacyUrl}" style="color:#1f3a5f; text-decoration:none;">Privacy</a>
+                            </span>
+                        </div>
+                        <div>
+                            &copy; <span th:text="${copyrightYear}">2026</span>
+                            <span th:text="${productBrand}">Product Brand</span>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

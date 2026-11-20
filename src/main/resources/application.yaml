@@ -1,6 +1,5 @@
 server:
-  port:8080
-
+  port: 8080
 
 spring:
   application:
@@ -14,36 +13,51 @@ spring:
     open-in-view: false
     show-sql: false
     hibernate:
-          ddl-auto: update
-
-
+      ddl-auto: update
   mail:
-      host: smtp.gmail.com
-      port: 587
-      username: chandru4809@gmail.com
-      password: 'dttz uvrv qpft reia'
-      properties:
-        mail:
-         smtp:
-           auth: true
-           starttls:
-             enable: true
-             required: true
-           connectiontimeout: 5000
-           timeout: 5000
-           writetimeout: 5000
+    host: smtp.gmail.com
+    port: 587
+    username: chandru4809@gmail.com
+    password: 'dttz uvrv qpft reia'
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+    consumer:
+      group-id: email-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+    listener:
+      ack-mode: record
 
 app:
-   email:
-          from: ${EMAIL_FROM:no-reply@example.com}
-          from-name: ${EMAIL_FROM_NAME:My Company}
-          max-attempts: 3
-          retry-attempts-ms: 60000
-          provider: smtp
-          sendgrid-api-key: ${SENDGRID_API_KEY:}
-
-   security:
-      api-keys:
-            order-service: ${API_KEY_ORDER_SERVICE:change-me-order}
-            user-service: ${API_KEY_USER_SERVICE:change-me-user}
-
+  email:
+    from: ${EMAIL_FROM:no-reply@example.com}
+    from-name: ${EMAIL_FROM_NAME:My Company}
+    max-attempts: 3
+    retry-interval-ms: 60000
+    provider: smtp
+    sendgrid-api-key: ${SENDGRID_API_KEY:}
+    admin-alert-to: uday2275@zohomail.in
+    alert-from: chandru4809@gmail.com
+  security:
+    api-keys:
+      order-service: ${API_KEY_ORDER_SERVICE:change-me-order}
+      user-service: ${API_KEY_USER_SERVICE:change-me-user}
+      admin-service: ${API_KEY_ADMIN_SERVICE:change-me-admin}
+    admin-clients:
+      - admin-service
