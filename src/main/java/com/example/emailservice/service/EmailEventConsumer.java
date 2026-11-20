@@ -15,6 +15,7 @@ public class EmailEventConsumer {
 
     @KafkaListener(topics = KafkaConfig.EMAIL_TOPIC, groupId = "email-service")
     public void onMessage(String emailId) {
+
         log.info("Received email id {} from Kafka", emailId);
         emailDispatcher.dispatch(Long.valueOf(emailId));
     }

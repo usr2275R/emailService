@@ -24,14 +24,14 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class ApiKeyFilter extends OncePerRequestFilter {
-
     public static final String HEADER = "X-API-KEY";
     public static final String CLIENT = "clientId";
 
-  private final AppProperties properties;
-  private final ApiErrorWriter apiErrorWriter;
+    private final AppProperties properties;
+    private final ApiErrorWriter apiErrorWriter;
+
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request){
+    protected boolean shouldNotFilter(HttpServletRequest request) {
         String path= request.getRequestURI();
         return path.startsWith("/swagger-ui")|| path.startsWith("/v3/api-docs");
     }
@@ -39,7 +39,8 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                            FilterChain chain) throws ServletException, IOException{
+                            FilterChain chain) throws ServletException, IOException {
+
         String provided = request.getHeader(HEADER);
         String clientId = provided == null ? null: resolveClient(provided);
 
@@ -53,10 +54,10 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_CLIENT"));
+
         if (properties.getSecurity().getAdminClients().contains(clientId)) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
-
 
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(clientId, null, authorities);
@@ -65,10 +66,11 @@ public class ApiKeyFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    private String resolveClient(String provided){
+    private String resolveClient(String provided) {
+
         byte[] providedBytes = provided.getBytes(StandardCharsets.UTF_8);
-        for(Map.Entry<String,String> e : properties.getSecurity().getApiKeys().entrySet()){
-            if(MessageDigest.isEqual(providedBytes, e.getValue().getBytes(StandardCharsets.UTF_8))){
+        for(Map.Entry<String,String> e : properties.getSecurity().getApiKeys().entrySet()) {
+            if(MessageDigest.isEqual(providedBytes, e.getValue().getBytes(StandardCharsets.UTF_8))) {
                 return e.getKey();
             }
         }

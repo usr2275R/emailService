@@ -34,6 +34,7 @@ public class KafkaConfig {
 
     @Bean
     public DefaultErrorHandler errorHandler(KafkaTemplate<String, String> template) {
+
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
                 template, (record, ex) -> new TopicPartition(EMAIL_DLT_TOPIC, -1));
         long retries = Math.max(0, appProperties.getEmail().getMaxAttempts() - 1);

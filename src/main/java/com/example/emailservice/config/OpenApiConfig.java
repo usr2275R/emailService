@@ -15,7 +15,8 @@ public class OpenApiConfig {
     private static final String API_KEY_SCHEME ="apiKeyAuth";
 
     @Bean
-    public OpenAPI emailserviceOpenAPI(){
+    public OpenAPI emailserviceOpenAPI() {
+
         return new OpenAPI()
                 .info(new Info()
                         .title("Email service API")

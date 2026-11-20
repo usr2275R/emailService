@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
     @Bean
     public FilterRegistrationBean<ApiKeyFilter> apiKeyFilterRegistration(ApiKeyFilter filter) {
         FilterRegistrationBean<ApiKeyFilter> reg = new FilterRegistrationBean<>(filter);

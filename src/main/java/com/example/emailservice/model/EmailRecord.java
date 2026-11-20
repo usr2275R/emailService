@@ -16,10 +16,12 @@ import lombok.Setter;
 import java.time.Instant;
 
 @Entity
-@Table(name="email_record", indexes = {
-        @Index(name="idx_email_status", columnList = "email_status"),
-        @Index(name ="idx_email_client", columnList = "client_id")
-})
+@Table(
+        name="email_record",
+        indexes = {
+                @Index(name="idx_email_status", columnList = "email_status"),
+                @Index(name ="idx_email_client", columnList = "client_id")
+        })
 @RequiredArgsConstructor
 @Getter
 @Setter

@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AdminController {
 
-
     private final EmailRecordRepositary repository;
 
     @GetMapping("/test")
-    public String test() { return "admin ok"; }
-
-
+    public String test() {
+        return "admin ok";
+    }
 }

@@ -32,7 +32,7 @@ public class EmailService {
     private final EmailDispatcher emailDispatcher;
 
 
-    public EmailResponse submit(EmailRequest emailRequest, String clientId){
+    public EmailResponse submit(EmailRequest emailRequest, String clientId) {
     String body = emailRequest.body();
     String subject = emailRequest.subject();
     boolean html = emailRequest.html();
@@ -44,8 +44,9 @@ public class EmailService {
 
 
 
-    if(emailRequest.templateName() !=null && !emailRequest.templateName().isBlank()){
+    if(emailRequest.templateName() !=null && !emailRequest.templateName().isBlank()) {
         Context context =new Context();
+
         if(emailRequest.variables() != null)
             context.setVariables(emailRequest.variables());
         try{
@@ -57,12 +58,13 @@ public class EmailService {
 
         html=true;
 
-        if(subject ==null || subject.isBlank()){
+        if(subject ==null || subject.isBlank()) {
             subject= defaultSubject(emailRequest.templateName(),emailRequest.variables());
         }
     }
 
     EmailRecord emailRecord = new EmailRecord();
+
     emailRecord.setClientId(clientId);
     emailRecord.setToAddress(join(emailRequest.to()));
     emailRecord.setCcAddress(join(emailRequest.cc()));
@@ -71,20 +73,23 @@ public class EmailService {
     emailRecord.setBody(body);
     emailRecord.setHtml(html);
     emailRecord.setProvider(chosen.name().toLowerCase());
-    emailRecordRepositary.save(emailRecord);
 
+    emailRecordRepositary.save(emailRecord);
     emailEventProducer.publish(emailRecord.getId());
+
     log.info("Email{} accepted from client {}",emailRecord.getId(),clientId);
     return EmailResponse.from(emailRecord);
 }
 
-public EmailResponse getStatus(Long id, String clientId){
+public EmailResponse getStatus(Long id, String clientId) {
+
     return emailRecordRepositary.findByIdAndClientId(id,clientId)
             .map(EmailResponse::from)
             .orElseThrow(()-> new NotFoundException("Email not found"+id));
 }
     @Scheduled(fixedDelayString = "${app.email.retry-interval-ms:60000}")
     public void retryFailed() {
+
         List<EmailRecord> failed = emailRecordRepositary.findPendingEmails(
                 EmailStatus.FAILED, appProperties.getEmail().getMaxAttempts());
         if (!failed.isEmpty()) {

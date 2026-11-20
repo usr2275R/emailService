@@ -20,9 +20,11 @@ import java.util.List;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex,
                                                      HttpServletRequest req) {
+
         List<ApiError.FieldViolation> violations = ex.getBindingResult().getFieldErrors().stream()
                 .map(fe -> new ApiError.FieldViolation(fe.getField(), fe.getDefaultMessage(), fe.getCode()))
                 .toList();
@@ -32,6 +34,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleUnreadable(HttpMessageNotReadableException ex,
                                                      HttpServletRequest req) {
+
         log.warn("Unreadable request body: {}", ex.getMessage());
         return build(HttpStatus.BAD_REQUEST, "Malformed or unreadable request body", req, List.of());
     }
@@ -39,6 +42,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
                                                        HttpServletRequest req) {
+
         String message = "Parameter '" + ex.getName() + "' has an invalid value";
         return build(HttpStatus.BAD_REQUEST, message, req, List.of());
     }
@@ -46,6 +50,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ApiError> handleMissingParam(MissingServletRequestParameterException ex,
                                                        HttpServletRequest req) {
+
         return build(HttpStatus.BAD_REQUEST,
                 "Missing required parameter: " + ex.getParameterName(), req, List.of());
     }
@@ -53,6 +58,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ApiError> handleMissingHeader(MissingRequestHeaderException ex,
                                                         HttpServletRequest req) {
+
         return build(HttpStatus.BAD_REQUEST,
                 "Missing required header: " + ex.getHeaderName(), req, List.of());
     }
@@ -61,6 +67,7 @@ public class GlobalExceptionHandler {
                                            String message,
                                            HttpServletRequest req,
                                            List<ApiError.FieldViolation> violations) {
+
         ApiError body = new ApiError(
                 Instant.now(),
                 status.value(),

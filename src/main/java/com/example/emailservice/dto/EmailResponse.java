@@ -7,6 +7,7 @@ import java.time.Instant;
 
 public record EmailResponse(Long id, EmailStatus emailStatus, int attempts,
                             String lastError, Instant createdAt, Instant sentAt) {
+
     public static EmailResponse from(EmailRecord emailRecord ) {
         return new EmailResponse(emailRecord.getId(),
                 emailRecord.getEmailStatus(),

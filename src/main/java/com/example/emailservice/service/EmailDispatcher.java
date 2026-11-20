@@ -21,8 +21,7 @@ public class EmailDispatcher {
     private final EmailRecordRepositary emailRecordRepositary;
     private final AppProperties appProperties;
 
-    //@Async("emailExecutor")
-    public void dispatch(Long emailId){
+    public void dispatch(Long emailId) {
         EmailRecord emailRecord= emailRecordRepositary.findById(emailId).orElse(null);
         if(emailRecord==null || emailRecord.getEmailStatus()== EmailStatus.SENT)
             return;
@@ -57,7 +56,7 @@ public class EmailDispatcher {
            emailRecordRepositary.save(emailRecord);
     }
 
-    private static String truncate(String s){
+    private static String truncate(String s) {
         if(s==null)
             return "unknown error";
         return s.length()>900 ? s.substring(0,900) : s;

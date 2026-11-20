@@ -24,14 +24,16 @@ public class EmailController {
 
     @PostMapping
     public ResponseEntity<EmailResponse> send(@Valid @RequestBody EmailRequest emailRequest,
-                                              HttpServletRequest httpServletRequest){
+                                              HttpServletRequest httpServletRequest) {
+
         String clientId = (String) httpServletRequest.getAttribute(ApiKeyFilter.CLIENT);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(emailService.submit(emailRequest,clientId));
     }
 
     @GetMapping("/{id}")
-    public EmailResponse status(@PathVariable Long id, HttpServletRequest httpServletRequest){
+    public EmailResponse status(@PathVariable Long id, HttpServletRequest httpServletRequest) {
+
         String clientId = (String) httpServletRequest.getAttribute(ApiKeyFilter.CLIENT);
         return emailService.getStatus(id,clientId);
     }

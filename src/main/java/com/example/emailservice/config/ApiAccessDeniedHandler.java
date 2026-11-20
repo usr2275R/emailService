@@ -21,6 +21,7 @@ public class ApiAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,
                        AccessDeniedException ex) throws IOException {
+
         apiErrorWriter.write(request, response, HttpStatus.FORBIDDEN, "Access denied");
     }
 }

@@ -10,7 +10,8 @@ import java.util.concurrent.Executor;
 public class AsyncConfig {
 
     @Bean(name = "emailExecutor")
-    public Executor emailExecutor(){
+    public Executor emailExecutor() {
+
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(4);
         executor.setMaxPoolSize(8);

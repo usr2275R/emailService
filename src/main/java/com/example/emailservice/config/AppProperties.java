@@ -18,18 +18,20 @@ public class AppProperties {
 
     @Setter
     @Getter
-    public static class Email{
+    public static class Email {
+
         private String from;
         private String fromName;
         private int maxAttempts=3;
         private long retryAttemptsMs=6000;
-        private  String provider = "smtp";       // new
+        private  String provider = "smtp";
         private  String sendgridApiKey = "";
 
     }
     @Setter
     @Getter
-    public static class Security{
+    public static class Security {
+
         private Map<String,String> apiKeys = new HashMap<>();
         private Set<String> adminClients = new HashSet<>();
 

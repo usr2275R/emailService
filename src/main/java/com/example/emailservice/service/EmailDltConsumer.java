@@ -32,6 +32,7 @@ public class EmailDltConsumer {
     public void consumeDlt(String emailId,
                            @Header(value = KafkaHeaders.DLT_EXCEPTION_MESSAGE, required = false) String error) {
         log.error("Dead letter received for email {} | reason: {}", emailId, error);
+
         try {
             EmailRecord r = emailRecordRepositary.findById(Long.valueOf(emailId)).orElse(null);
             if (r != null && r.getEmailStatus() != EmailStatus.SENT) {
@@ -57,6 +58,7 @@ public class EmailDltConsumer {
                     error));
             mailSender.send(msg);
             log.info("Admin notified about failed email {}", emailId);
+
         } catch (Exception e) {
             log.error("Could not process dead letter for email {}", emailId, e);
         }
