@@ -62,7 +62,7 @@ app:
     alert-from: chandru4809@gmail.com
   security:
     api-keys:
-      order-service: ${API_KEY_ORDER_SERVICE:change-me-order}
+      order-service: ${API_KEY_ORDER_SERVICE:f74a235c9d404d71864ac271b327b4bc667dcc054cc141ff90748e7ea57ce15a}
       user-service: ${API_KEY_USER_SERVICE:change-me-user}
       admin-service: ${API_KEY_ADMIN_SERVICE:change-me-admin}
     admin-clients:

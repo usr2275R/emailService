@@ -20,7 +20,8 @@ import java.time.Instant;
         name="email_record",
         indexes = {
                 @Index(name="idx_email_status", columnList = "email_status"),
-                @Index(name ="idx_email_client", columnList = "client_id")
+                @Index(name ="idx_email_client", columnList = "client_id"),
+                @Index(name = "idx_email_trace", columnList = "trace_id")
         })
 @RequiredArgsConstructor
 @Getter
@@ -68,5 +69,8 @@ public class EmailRecord {
 
     private Instant sentAt;
     private Instant lastAttemptAt;
+
+    @Column(name = "trace_id", length = 64)
+    private String traceId;
 
 }

@@ -6,7 +6,7 @@ import com.example.emailservice.model.EmailStatus;
 import java.time.Instant;
 
 public record EmailResponse(Long id, EmailStatus emailStatus, int attempts,
-                            String lastError, Instant createdAt, Instant sentAt) {
+                            String lastError, Instant createdAt, Instant sentAt,String traceId) {
 
     public static EmailResponse from(EmailRecord emailRecord ) {
         return new EmailResponse(emailRecord.getId(),
@@ -14,6 +14,7 @@ public record EmailResponse(Long id, EmailStatus emailStatus, int attempts,
                 emailRecord.getAttempts(),
                 emailRecord.getLastError(),
                 emailRecord.getCreatedAt(),
-                emailRecord.getSentAt());
+                emailRecord.getSentAt(),
+                emailRecord.getTraceId());
     }
 }

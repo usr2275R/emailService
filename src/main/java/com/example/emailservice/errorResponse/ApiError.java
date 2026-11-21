@@ -1,7 +1,6 @@
 package com.example.emailservice.errorResponse;
 
 import java.time.Instant;
-import java.util.List;
 
 public record ApiError(
         Instant timestamp,
@@ -9,7 +8,4 @@ public record ApiError(
         String error,
         String message,
         String path,
-        List<FieldViolation> violations) {
-
-    public record FieldViolation(String field, String message,String code) {}
-}
+        String traceId) { }
