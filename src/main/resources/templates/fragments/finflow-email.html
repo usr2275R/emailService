@@ -1,0 +1,230 @@
+<!-- Preheader -->
+<div xml:th="http://www.thymeleaf.org"
+     th:fragment="preheader(line)"
+     style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;"
+     th:text="${line}">
+    Ticket notification
+</div>
+
+<th:block th:fragment="pageShellStart" xml:th="http://www.thymeleaf.org">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+           style="margin:0;padding:0;width:100%;background-color:#edf2f7;border-collapse:collapse;">
+        <tr>
+            <td align="center" style="padding:24px 12px 32px;">
+
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                       style="max-width:620px;border-collapse:collapse;background-color:#ffffff;border:1px solid #dbe3ec;">
+
+                    <!-- Brand header -->
+                    <tr>
+                        <td style="padding:22px 28px;border-bottom:1px solid #e8edf3;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td>
+                                    <span style="font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:22px;font-weight:700;color:#3346a8;"
+                                          th:text="${productBrand} ?: 'Ticket Manager'">
+                                        Ticket Manager
+                                    </span>
+                                    </td>
+                                    <td align="right">
+                                    <span style="font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.12em;color:#64748b;"
+                                          th:text="${platformBrand} ?: 'SERVICE DESK'">
+                                        SERVICE DESK
+                                    </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- System notification banner -->
+                    <tr>
+                        <td style="padding:11px 28px;background-color:#eef2ff;border-bottom:1px solid #dbe3ec;">
+                        <span style="font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.12em;color:#4f46a5;">
+                            &#9679; TICKET NOTIFICATION
+                        </span>
+                        </td>
+                    </tr>
+
+                    <!-- Content starts -->
+                    <tr>
+                        <td style="padding:28px 28px 8px;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
+
+
+</th:block>
+
+<!-- Title -->
+<th:block th:fragment="notificationTitle" xml:th="http://www.thymeleaf.org">
+    <h1 style="margin:0 0 10px;padding:0;font-size:23px;font-weight:700;line-height:1.3;color:#0f172a;"
+        th:text="${title} ?: ${subject}">
+        Ticket Notification
+    </h1>
+
+    <p style="margin:0 0 20px;padding:0;font-size:12px;line-height:1.5;color:#64748b;">
+        Notification time:
+        <span style="font-weight:600;color:#334155;" th:text="${reportedAt}">
+            2026-11-21 14:30
+        </span>
+    </p>
+</th:block>
+
+<!-- Greeting -->
+<th:block th:fragment="greeting" xml:th="http://www.thymeleaf.org">
+    <p th:if="${receiverName != null}"
+       style="margin:0 0 14px;padding:0;font-size:15px;line-height:1.6;color:#334155;">
+        Hello
+        <span style="font-weight:600;color:#0f172a;" th:text="${receiverName}">User</span>,
+    </p>
+</th:block>
+
+<!-- Message -->
+<th:block th:fragment="messageBody" xml:th="http://www.thymeleaf.org">
+    <p th:if="${message != null}"
+       style="margin:0 0 22px;padding:0;font-size:15px;line-height:1.65;color:#334155;white-space:pre-line;"
+       th:text="${message}">
+        Ticket notification message
+    </p>
+</th:block>
+
+<!-- Ticket details -->
+<th:block th:fragment="ticketDetails" xmlns:th="http://www.thymeleaf.org">
+    <table th:if="${detailRows != null and !detailRows.isEmpty()}"
+           role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+           style="margin:0 0 22px;border-collapse:collapse;border:1px solid #e2e8f0;">
+
+        <tr>
+            <td colspan="2" style="padding:10px 14px;background-color:#f1f5f9;border-bottom:1px solid #e2e8f0;">
+                <span style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#475569;">
+                    TICKET DETAILS
+                </span>
+            </td>
+        </tr>
+
+        <tr th:each="row : ${detailRows}">
+            <td style="width:38%;padding:10px 14px;font-size:12px;font-weight:600;color:#64748b;vertical-align:top;border-bottom:1px solid #eef2f6;"
+                th:text="${row['label']}">
+                Label
+            </td>
+
+            <td style="padding:10px 14px;font-size:13px;line-height:1.5;color:#0f172a;vertical-align:top;border-bottom:1px solid #eef2f6;">
+
+                <span th:if="${row['badge'] == null}" th:text="${row['value']}">
+                    Value
+                </span>
+
+                <span th:if="${row['badge'] != null}"
+                      style="display:inline-block;padding:4px 10px;font-size:11px;font-weight:700;letter-spacing:0.04em;color:#ffffff;background-color:#4f46a5;border-radius:4px;"
+                      th:text="${row['badge']}">
+                    STATUS
+                </span>
+
+                <span th:if="${row['badge'] != null and row['value'] != null}"
+                      style="display:block;margin-top:6px;font-size:13px;color:#334155;"
+                      th:text="${row['value']}">
+                    Value
+                </span>
+            </td>
+        </tr>
+    </table>
+</th:block>
+
+<!-- Reason / description / comment block -->
+<th:block th:fragment="reasonBlock" xml:th="http://www.thymeleaf.org">
+    <table th:if="${reason != null and !#strings.isEmpty(reason)}"
+           role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+           style="margin:0 0 22px;border-collapse:collapse;">
+        <tr>
+            <td style="padding:14px 16px;background-color:#f8fafc;border-left:4px solid #64748b;">
+                <p style="margin:0 0 5px;font-size:12px;font-weight:700;color:#334155;"
+                   th:text="${reasonLabel} ?: 'Additional information'">
+                    Additional information
+                </p>
+
+                <p style="margin:0;font-size:14px;line-height:1.6;color:#475569;white-space:pre-line;"
+                   th:text="${reason}">
+                    Additional information
+                </p>
+            </td>
+        </tr>
+    </table>
+</th:block>
+
+<!-- CTA Button -->
+<th:block th:fragment="ctaButton" xml:th="http://www.thymeleaf.org">
+    <table th:if="${ctaUrl != null}" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+           style="margin:0 0 24px;border-collapse:collapse;">
+        <tr>
+            <td align="center">
+                <a th:href="${ctaUrl}" target="_blank" rel="noopener"
+                   style="display:inline-block;min-width:220px;padding:13px 28px;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-align:center;text-decoration:none;color:#ffffff;background-color:#4f46a5;border-radius:6px;"
+                   th:text="${ctaLabel} ?: 'OPEN TICKET'">
+                    OPEN TICKET
+                </a>
+            </td>
+        </tr>
+    </table>
+
+    <p th:if="${ctaUrl != null}"
+       style="margin:0 0 6px;font-size:11px;color:#94a3b8;text-align:center;">
+        If the button doesn't work, copy this link:
+    </p>
+
+    <p th:if="${ctaUrl != null}"
+       style="margin:0 0 22px;padding:10px 12px;font-size:12px;line-height:1.5;color:#475569;word-break:break-all;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;"
+       th:text="${ctaUrl}">
+        https://example.com/tickets
+    </p>
+</th:block>
+
+<!-- Footer / Email Shell END -->
+<th:block th:fragment="pageShellEnd" xml:th="http://www.thymeleaf.org">
+    </td>
+    </tr>
+
+    <tr>
+        <td style="padding:20px 28px 24px;border-top:1px solid #e8edf3;background-color:#f8fafc;">
+
+            <p style="margin:0 0 14px;font-size:12px;line-height:1.6;color:#64748b;text-align:center;">
+                This is an automated notification from
+                <span th:text="${platformBrand} ?: 'Ticket Manager'">Ticket Manager</span>.
+                Please do not reply to this email.
+            </p>
+
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                    <td align="center" style="padding:12px 0;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;">
+                        <a th:if="${supportUrl != null}" th:href="${supportUrl}"
+                           style="font-size:12px;font-weight:600;color:#4f46a5;text-decoration:none;margin:0 10px;">
+                            Support
+                        </a>
+
+                        <a th:if="${appBaseUrl != null}" th:href="${appBaseUrl}"
+                           style="font-size:12px;font-weight:600;color:#4f46a5;text-decoration:none;margin:0 10px;">
+                            Ticket Portal
+                        </a>
+
+                        <a th:if="${privacyUrl != null}" th:href="${privacyUrl}"
+                           style="font-size:12px;font-weight:600;color:#4f46a5;text-decoration:none;margin:0 10px;">
+                            Privacy Policy
+                        </a>
+                    </td>
+                </tr>
+            </table>
+
+            <p style="margin:16px 0 0;font-size:11px;color:#94a3b8;text-align:center;">
+                <span th:text="${productBrand} ?: 'Ticket Manager'">Ticket Manager</span>
+                &copy;
+                <span th:text="${copyrightYear} ?: '2026'">2026</span>
+            </p>
+
+            <p th:if="${recipientEmail != null}"
+               style="margin:14px 0 0;font-size:11px;color:#94a3b8;text-align:center;">
+                Sent to <span th:text="${recipientEmail}">user@example.com</span>
+            </p>
+        </td>
+    </tr>
+    </table>
+    </td>
+    </tr>
+    </table>
+</th:block>

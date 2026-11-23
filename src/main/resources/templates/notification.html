@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      th:replace="~{fragments/layout :: layout(${title}, ~{::content})}">
+<body>
+<th:block th:fragment="content">
+    <p style="margin:0;white-space:pre-line;" th:text="${message}">Notification message</p>
+    <th:block th:replace="~{fragments/components :: button(${actionUrl}, ${actionText})}"/>
+</th:block>
+</body>
+</html>
