@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${subject} ?: 'Ticket Created'">Ticket Created</title>
+</head>
+<body style="margin:0;padding:0;background-color:#edf2f7;">
+
+<th:block
+        th:insert="~{fragments/finflow-email :: preheader(${preheader} ?: 'Your ticket has been created successfully')}"/>
+<th:block th:insert="~{fragments/finflow-email :: pageShellStart}"/>
+<th:block th:insert="~{fragments/finflow-email :: notificationTitle}"/>
+<th:block th:insert="~{fragments/finflow-email :: greeting}"/>
+
+<th:block th:insert="~{fragments/finflow-email :: messageBody}"/>
+<th:block th:insert="~{fragments/finflow-email :: ticketDetails}"/>
+
+<th:block th:insert="~{fragments/finflow-email :: reasonBlock}"/>
+<th:block th:insert="~{fragments/finflow-email :: ctaButton}"/>
+<th:block th:insert="~{fragments/finflow-email :: pageShellEnd}"/>
+
+</body>
+</html>

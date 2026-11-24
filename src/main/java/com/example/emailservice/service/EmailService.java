@@ -4,10 +4,12 @@ import com.example.emailservice.config.AppProperties;
 import com.example.emailservice.dto.EmailRequest;
 import com.example.emailservice.dto.EmailResponse;
 import com.example.emailservice.exception.NotFoundException;
+import com.example.emailservice.exception.TemplateNotFoundException;
 import com.example.emailservice.model.EmailProviderType;
 import com.example.emailservice.model.EmailRecord;
 import com.example.emailservice.model.EmailStatus;
 import com.example.emailservice.repositary.EmailRecordRepositary;
+import com.example.emailservice.templates.EmailTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -18,8 +20,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.exceptions.TemplateInputException;
 
-import java.time.Year;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +60,7 @@ public class EmailService {
         String body = emailRequest.body();
         String subject = emailRequest.subject();
         boolean html = emailRequest.html();
+        EmailTemplate template = EmailTemplate.fromKey(emailRequest.templateName());
 
         EmailProviderType chosen = emailRequest.provider() != null
                 ? emailRequest.provider()
@@ -74,7 +75,7 @@ public class EmailService {
             }
 
             if (subject == null || subject.isBlank()) {
-                subject = defaultSubject(emailRequest.templateName(), emailRequest.variables());
+                subject = template.defaultSubject(emailRequest.variables());
             }
 
 
@@ -82,22 +83,12 @@ public class EmailService {
             if (!context.containsVariable("title")) {
                 context.setVariable("title", subject);
             }
-            context.setVariable("templateName", emailRequest.templateName());
-            context.setVariable("recipientEmail", join(emailRequest.to()));
-            context.setVariable("fromEmail", fromEmail);
-            context.setVariable("productBrand", productBrand);
-            context.setVariable("platformBrand", platformBrand);
-            context.setVariable("appBaseUrl", appBaseUrl);
-            context.setVariable("supportUrl", blankToNull(supportUrl));
-            context.setVariable("privacyUrl", blankToNull(privacyUrl));
-            context.setVariable("copyrightYear", String.valueOf(Year.now().getValue()));
-            context.setVariable("reportedAt", ZonedDateTime.now().format(REPORTED_AT_FMT));
-
+            context.setVariable("templateName", template.key());
 
             try {
-                body = templateEngine.process(emailRequest.templateName(), context);
+                body = templateEngine.process(template.key(), context);
             } catch (TemplateInputException e) {
-                throw new IllegalArgumentException("Unknown template:" + emailRequest.templateName());
+                throw new TemplateNotFoundException("Unknown template:" + emailRequest.templateName());
             }
 
             html = true;

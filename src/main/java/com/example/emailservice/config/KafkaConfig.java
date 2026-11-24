@@ -19,6 +19,7 @@ public class KafkaConfig {
     public static final String EMAIL_SEND_TOPIC = "email.send";
     public static final String EMAIL_TOPIC = "email-events";
     public static final String EMAIL_DLT_TOPIC = EMAIL_TOPIC + ".DLT";
+    public static final String EMAIL_REQUEST_TOPIC = "email-request-topic";
 
     private final AppProperties appProperties;
 

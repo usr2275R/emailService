@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en"
-      th:replace="~{fragments/layout :: layout(${title}, ~{::content})}">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="${title} ?: 'Notification'">Notification</title>
+</head>
 <body>
-<th:block th:fragment="content">
-    <p style="margin:0;white-space:pre-line;" th:text="${message}">Notification message</p>
-    <th:block th:replace="~{fragments/components :: button(${actionUrl}, ${actionText})}"/>
-</th:block>
+
+<th:block th:insert="~{fragments/finflow-email :: preheader(${preheader ?: title ?: 'Notification'})}"/>
+<th:block th:insert="~{fragments/finflow-email :: pageShellStart}"/>
+<th:block th:insert="~{fragments/finflow-email :: notificationTitle}"/>
+<th:block th:insert="~{fragments/finflow-email :: greeting}"/>
+<th:block th:insert="~{fragments/finflow-email :: messageBody}"/>
+<th:block th:insert="~{fragments/finflow-email :: ctaButton}"/>
+<th:block th:insert="~{fragments/finflow-email :: pageShellEnd}"/>
+
 </body>
 </html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="${subject} ?: 'Ticket Status Updated'">Ticket Status Updated</title>
+</head>
+<body>
+
+<th:block th:insert="~{fragments/finflow-email :: preheader(${preheader} ?: 'Your ticket status has been updated')}"/>
+<th:block th:insert="~{fragments/finflow-email :: pageShellStart}"/>
+<th:block th:insert="~{fragments/finflow-email :: notificationTitle}"/>
+<th:block th:insert="~{fragments/finflow-email :: greeting}"/>
+<th:block th:insert="~{fragments/finflow-email :: messageBody}"/>
+<th:block th:insert="~{fragments/finflow-email :: ticketDetails}"/>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+        <td style="padding:6px 0;color:#6b7280;">Previous status</td>
+        <td style="padding:6px 0;" th:text="${oldStatus}">In Progress</td>
+    </tr>
+    <tr>
+        <td style="padding:6px 0;color:#6b7280;">New status</td>
+        <td style="padding:6px 0;" th:text="${newStatus}">Resolved</td>
+    </tr>
+</table>
+
+<div th:if="${resolutionComment != null}">
+    <p><strong>Resolution:</strong></p>
+    <p th:text="${resolutionComment}">Resolution comment</p>
+</div>
+
+<div th:if="${newStatus == 'Resolved'}">
+    <strong>Reopen policy:</strong> you can reopen this ticket within <strong>48 hours</strong>.
+    After that it is closed automatically and cannot be reopened.
+</div>
+
+<div th:if="${newStatus == 'Closed'}">
+    <strong>Ticket closed:</strong> this ticket can no longer be modified.
+</div>
+
+<th:block th:insert="~{fragments/finflow-email :: reasonBlock}"/>
+<th:block th:insert="~{fragments/finflow-email :: ctaButton}"/>
+<th:block th:insert="~{fragments/finflow-email :: pageShellEnd}"/>
+
+</body>
+</html>

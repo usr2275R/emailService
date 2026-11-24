@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -119,6 +120,11 @@ public class GlobalExceptionHandler {
                                                           HttpServletRequest req) {
         log.warn("Bad request: {}", ex.getMessage());
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req);
+    }
+
+    @ExceptionHandler(InvalidTemplateException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidTemplate(InvalidTemplateException ex) {
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
     }
 
     private ResponseEntity<ApiError> build(HttpStatus status,
