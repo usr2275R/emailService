@@ -2,6 +2,8 @@ package com.example.emailservice.config;
 
 
 
+import com.example.emailservice.exception.TemplateNotFoundException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.TopicPartition;
@@ -38,7 +40,17 @@ public class KafkaConfig {
 
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
                 template, (record, ex) -> new TopicPartition(EMAIL_DLT_TOPIC, -1));
+
         long retries = Math.max(0, appProperties.getEmail().getMaxAttempts() - 1);
-        return new DefaultErrorHandler(recoverer, new FixedBackOff(2000L, retries));
+
+        DefaultErrorHandler handler =
+                new DefaultErrorHandler(recoverer, new FixedBackOff(2000L, retries));
+
+        handler.addNotRetryableExceptions(
+                JsonProcessingException.class,
+                IllegalArgumentException.class,
+                TemplateNotFoundException.class);   // import from your exception package
+
+        return handler;
     }
 }

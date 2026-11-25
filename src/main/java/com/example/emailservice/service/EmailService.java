@@ -5,6 +5,7 @@ import com.example.emailservice.dto.EmailRequest;
 import com.example.emailservice.dto.EmailResponse;
 import com.example.emailservice.exception.NotFoundException;
 import com.example.emailservice.exception.TemplateNotFoundException;
+import com.example.emailservice.kafka.EmailEvent;
 import com.example.emailservice.model.EmailProviderType;
 import com.example.emailservice.model.EmailRecord;
 import com.example.emailservice.model.EmailStatus;
@@ -34,6 +35,7 @@ public class EmailService {
     private final TemplateEngine templateEngine;
     private final AppProperties appProperties;
     private final EmailDispatcher emailDispatcher;
+    private final EmailPayloadService emailPayloadService;
 
     @Value("${spring.mail.username:noreply@mycompany.com}")
     private String fromEmail;
@@ -56,7 +58,11 @@ public class EmailService {
     private static final DateTimeFormatter REPORTED_AT_FMT =
             DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm z");
 
-    public EmailResponse submit(EmailRequest emailRequest, String clientId) {
+    public record PreparedEmail(String subject, String body, boolean html,
+                                EmailProviderType provider) {}          // NEW
+
+    // NEW: template + provider logic moved out of submit()
+    public PreparedEmail prepare(EmailRequest emailRequest) {
         String body = emailRequest.body();
         String subject = emailRequest.subject();
         boolean html = emailRequest.html();
@@ -69,7 +75,6 @@ public class EmailService {
         if (emailRequest.templateName() != null && !emailRequest.templateName().isBlank()) {
             Context context = new Context();
 
-
             if (emailRequest.variables() != null) {
                 context.setVariables(emailRequest.variables());
             }
@@ -77,7 +82,6 @@ public class EmailService {
             if (subject == null || subject.isBlank()) {
                 subject = template.defaultSubject(emailRequest.variables());
             }
-
 
             context.setVariable("subject", subject);
             if (!context.containsVariable("title")) {
@@ -93,24 +97,49 @@ public class EmailService {
 
             html = true;
         }
+        return new PreparedEmail(subject, body, html, chosen);
+    }
 
+    // just after prepare
+    public void fill(EmailRecord r, EmailRequest req, PreparedEmail p) {
+        r.setToAddress(join(req.to()));
+        r.setCcAddress(join(req.cc()));
+        r.setBccAddress(join(req.bcc()));
+        r.setSubject(p.subject());
+        r.setBody(p.body());
+        r.setHtml(p.html());
+        r.setProvider(p.provider().name().toLowerCase());
+    }
+
+    // two submit Eventsubmit 1st
+    public EmailResponse submit(EmailRequest emailRequest, String clientId) {
+        PreparedEmail p = prepare(emailRequest);
         EmailRecord emailRecord = new EmailRecord();
-
         emailRecord.setClientId(clientId);
-        emailRecord.setToAddress(join(emailRequest.to()));
-        emailRecord.setCcAddress(join(emailRequest.cc()));
-        emailRecord.setBccAddress(join(emailRequest.bcc()));
-        emailRecord.setSubject(subject);
-        emailRecord.setBody(body);
-        emailRecord.setHtml(html);
-        emailRecord.setProvider(chosen.name().toLowerCase());
+        fill(emailRecord, emailRequest, p);
         emailRecord.setTraceId(MDC.get("traceId"));
 
         emailRecordRepositary.save(emailRecord);
         emailEventProducer.publish(emailRecord.getId());
 
-        log.info("Email{} accepted from client {}", emailRecord.getId(), clientId);
+        log.info("Email {} accepted from client {}", emailRecord.getId(), clientId);
         return EmailResponse.from(emailRecord);
+    }
+
+    // second here to combine  prepare then fill
+    public void submitEvent(EmailEvent event, String payload, EmailRequest req) {
+        EmailRecord r = emailPayloadService.saveOrGet(event, payload);
+
+        if (r.getEmailStatus() == EmailStatus.SENT) {
+            return;
+        }
+
+        PreparedEmail p = prepare(req);
+        fill(r, req, p);
+        emailRecordRepositary.save(r);
+        emailEventProducer.publish(r.getId());
+
+        log.info("Email {} accepted from event {}", r.getId(), event.requestId());
     }
 
     public EmailResponse getStatus(Long id, String clientId) {
@@ -141,5 +170,4 @@ public class EmailService {
         if (vars != null && vars.get("subject") != null) return String.valueOf(vars.get("subject"));
         return "Notification: " + template;
     }
-
 }

@@ -33,4 +33,7 @@ public interface EmailRecordRepositary extends JpaRepository<EmailRecord, Long> 
             @Param("attempts") int attempts,
             @Param("before") Instant before);
     Page<EmailRecord> findByEmailStatus(EmailStatus status, Pageable pageable);
+
+
+    Optional<EmailRecord> findByRequestId(String requestId);
 }

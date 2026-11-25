@@ -7,6 +7,7 @@ import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record EmailEvent(
+        String requestId,
         List<String> to,
         String subject,
         String templateName,

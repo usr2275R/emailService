@@ -44,10 +44,10 @@ public class EmailRecord {
     @Column(columnDefinition = "TEXT")
     private String bccAddress;
 
-    @Column(nullable = false,length = 500)
+    @Column(length = 500)
     private String subject;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(name ="body",columnDefinition = "TEXT")
     private String body;
 
     private boolean html;
@@ -72,5 +72,11 @@ public class EmailRecord {
 
     @Column(name = "trace_id", length = 64)
     private String traceId;
+
+    @Column(unique = true)
+    private String requestId;
+
+    @Column(columnDefinition = "TEXT")
+    private String requestPayload;
 
 }
